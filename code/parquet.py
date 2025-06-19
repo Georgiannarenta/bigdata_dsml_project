@@ -10,7 +10,7 @@ sc.setLogLevel("ERROR")
 username = "username" #georgiannarenta #ioannisanagnostaras
 
 job_id = sc.applicationId
-output_dir = f"hdfs://hdfs-namenode:9000/user/{username}/parquet_convert_output_{job_id}”
+output_dir = f'hdfs://hdfs-namenode:9000/user/{username}/parquet_convert_output_{job_id}'
 
 base_input_path = "hdfs://hdfs-namenode:9000/user/root/data/"
 base_output_path = f"hdfs://hdfs-namenode:9000/user/{username}/data/parquet/"
