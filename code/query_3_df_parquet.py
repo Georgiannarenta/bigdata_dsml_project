@@ -1,7 +1,7 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, round
 
-username = "username"  # π.χ. georgiannarenta
+username = "username" #georgiannarenta,ioannisanagnostaras
 
 spark = SparkSession.builder.appName("Query3_DataFrame").getOrCreate()
 sc = spark.sparkContext
