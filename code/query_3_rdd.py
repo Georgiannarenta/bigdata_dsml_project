@@ -22,7 +22,7 @@ income_file = spark.read.parquet(
 pop_rdd = pop_file.map(lambda x: (
     x["Zip Code"],
     float(str(x["Average Household Size"]))
-))
+)).filter(lambda x: x[1] != 0)
 
 income_rdd = income_file.map(lambda x: (
     x["Zip Code"],
