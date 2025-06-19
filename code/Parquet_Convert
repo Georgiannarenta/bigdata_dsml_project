@@ -4,6 +4,10 @@ from pyspark.sql.types import StructType, StructField, StringType, IntegerType, 
 spark = SparkSession.builder \
     .appName("Convert CSV to Parquet") \
     .getOrCreate()
+sc = spark.sparkContext()
+sc.setLogLevel("ERROR")
+job_id = sc.applicationId
+output_dir = f"hdfs://hdfs-namenode:9000/user/{username}/parquet_convert_output_{job_id}”
 
 username = "username" #georgiannarenta #ioannisanagnostaras
 base_input_path = "hdfs://hdfs-namenode:9000/user/root/data/"
