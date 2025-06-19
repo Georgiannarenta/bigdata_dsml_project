@@ -13,11 +13,8 @@ output_dir = f"hdfs://hdfs-namenode:9000/user/{username}/query3_df_output_{job_i
 pop_df = spark.read.parquet(f"hdfs://hdfs-namenode:9000/user/{username}/data/parquet/2010_Census_Populations_by_Zip_Code.parquet")
 income_df = spark.read.parquet(f"hdfs://hdfs-namenode:9000/user/{username}/data/parquet/LA_income_2015.parquet")
 
-# Φιλτράρεις τα εισοδήματα που ξεκινούν με $
-income_filtered_df = income_df.filter(col("Estimated Median Income").startswith("$"))
-
 # Καθαρίζεις τα πεδία εισοδήματος αφαιρώντας $ και κόμματα, και κάνεις cast σε double
-income_clean_df = income_filtered_df.withColumn(
+income_clean_df = income_income_df.withColumn(
     "Estimated_Median_Income_Clean",
     regexp_replace(regexp_replace(col("Estimated Median Income"), "\\$", ""), ",", "").cast("double")
 )
