@@ -10,7 +10,7 @@ job_id = sc.applicationId
 output_dir = f"hdfs://hdfs-namenode:9000/user/{username}/query3_rdd_output_{job_id}"
 
 pop_file = spark.read.parquet(
-    f"hdfs://hdfs-namenode:9000/user/{username}/data/parquet/LA_population_by_zip_2010.parquet"
+    f"hdfs://hdfs-namenode:9000/user/{username}/data/parquet/2010_Census_Populations_by_Zip_Code.parquet"
 ).rdd
 
 income_file = spark.read.parquet(
