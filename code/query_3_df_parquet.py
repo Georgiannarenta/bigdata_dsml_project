@@ -50,7 +50,7 @@ result = result_df.collect()
 for item in result:
     print(item)
 
-# Αποθήκευση στο HDFS
+
 result_df.write.mode("overwrite").parquet(output_dir)
 
 
