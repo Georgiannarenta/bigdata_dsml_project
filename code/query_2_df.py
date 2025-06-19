@@ -1,13 +1,15 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, to_date, year, when, count, round
+from pyspark.sql.functions import col, to_date, year, when, count, round, row_number
+from pyspark.sql.window import Window
+
+username = "username" #georgiannareta,ioannisanagnostaras
 
 spark = SparkSession.builder.appName("Query2_DataFrame").getOrCreate()
 sc = spark.sparkContext
 sc.setLogLevel("ERROR")
 
-username = "username" #ioannisanagnostaras , georgiannarenta
 job_id = sc.applicationId
-output_dir = f"hdfs://hdfs-namenode:9000/user/{username}/query2_df_output_{job_id}"
+output_dir = f"hdfs://hdfs-namenode:9000/user/{username}/query_2_df_output_{job_id}"
 
 crime_data_10_19 = spark.read.parquet(
     f"hdfs://hdfs-namenode:9000/user/{username}/data/parquet/LA_Crime_Data_2010_2019.parquet"
@@ -35,27 +37,17 @@ agg = crime_data.groupBy("year", "AREA NAME").agg(
 ).withColumn(
     "closed_case_rate",
     round((col("closed") / col("total")) * 100, 6)
+).select(
+    "year", col("AREA NAME").alias("precinct"), "closed_case_rate"
 )
 
-agg = agg.select("year", col("AREA NAME").alias("precinct"), "closed_case_rate")
+part = Window.partitionBy("year").orderBy(col("closed_case_rate").desc(), col("precinct"))
 
-agg_a = agg.alias("a")
-agg_b = agg.alias("b")
+ranked = agg.withColumn("#", row_number().over(part))
 
-joined = agg_a.join(
-    agg_b,
-    (col("a.year") == col("b.year")) &
-    (col("a.closed_case_rate") < col("b.closed_case_rate")),
-    how="left"
-)
+top3 = ranked.filter(col("#") <= 3).orderBy("year", "#")
 
-ranked = joined.groupBy("a.year", "a.precinct", "a.closed_case_rate").count()
+top3.show(truncate=False)
 
-top3 = ranked.filter(col("count") <= 2)
+top3.write.mode("overwrite").parquet(output_dir)
 
-final = top3.withColumn("#", col("count") + 1).select(
-    col("year"), col("precinct"), col("closed_case_rate"), col("#")
-).orderBy("year", "#")
-
-final.show(truncate=False)
-final.write.mode("overwrite").parquet(output_dir)
