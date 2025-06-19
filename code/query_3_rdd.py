@@ -26,7 +26,7 @@ pop_rdd = pop_file.map(lambda x: (
 
 income_rdd = income_file.map(lambda x: (
     str(x["Zip Code"]).zfill(5),
-    float(str(x["Estimated Median Income"]).replace(",", "").replace("$", "").strip()))
+    float(str(x["Estimated Median Income"]).replace(",", "").replace("$", "").strip())
 )).filter(lambda x: x[1] != 0 and x[0] is not None)
 
 
