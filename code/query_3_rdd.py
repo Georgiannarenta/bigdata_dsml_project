@@ -25,7 +25,7 @@ joined_rdd = pop_rdd.join(income_rdd)
 
 result_rdd = joined_rdd.map(lambda x: (
     x[0],
-    round(x[1][1] / x[1][0], 6))
+    round(x[1][1] / x[1][0], 6)))
 
 for item in result_rdd.collect():
     print(item)
