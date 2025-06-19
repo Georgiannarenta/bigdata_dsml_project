@@ -13,15 +13,16 @@ output_dir = f"hdfs://hdfs-namenode:9000/user/{username}/query3_df_output_{job_i
 pop_df = spark.read.parquet(f"hdfs://hdfs-namenode:9000/user/{username}/data/parquet/2010_Census_Populations_by_Zip_Code.parquet")
 income_df = spark.read.parquet(f"hdfs://hdfs-namenode:9000/user/{username}/data/parquet/LA_income_2015.parquet")
 
-
+# Φιλτράρεις τα εισοδήματα που ξεκινούν με $
 income_filtered_df = income_df.filter(col("Estimated Median Income").startswith("$"))
 
+# Καθαρίζεις τα πεδία εισοδήματος αφαιρώντας $ και κόμματα, και κάνεις cast σε double
 income_clean_df = income_filtered_df.withColumn(
     "Estimated_Median_Income_Clean",
-    col("Estimated Median Income").substr(2, 100).replace(",", "").cast("double")
+    regexp_replace(regexp_replace(col("Estimated Median Income"), "\\$", ""), ",", "").cast("double")
 )
 
-
+# Κάνεις join με τα δεδομένα πληθυσμού
 joined_df = pop_df.alias("p").join(
     income_clean_df.alias("i"),
     col("p.Zip Code") == col("i.Zip Code")
@@ -31,10 +32,8 @@ joined_df = pop_df.alias("p").join(
     col("i.Estimated_Median_Income_Clean").alias("Estimated Median Income")
 )
 
-
-
-
-result_df = jointed_df.withColumn(
+# Υπολογίζεις το εισόδημα ανά άτομο
+result_df = joined_df.withColumn(
     "Income_per_Person",
     round(col("Estimated Median Income") / col("Average Household Size"), 6)
 ).select(
@@ -44,6 +43,7 @@ result_df = jointed_df.withColumn(
 
 result_df.show()
 
-
+# Αποθηκεύεις το αποτέλεσμα
 result_df.write.mode("overwrite").parquet(output_dir)
+
 
