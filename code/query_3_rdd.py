@@ -1,4 +1,3 @@
-#
 from pyspark.sql import SparkSession
 
 username = "username" #georgiannarenta,ioannisanagnostaras
