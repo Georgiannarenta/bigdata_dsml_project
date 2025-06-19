@@ -1,6 +1,7 @@
 from pyspark.sql import SparkSession
 
-username = "username"  # π.χ. "georgiannarenta"
+username = "username"  #georgiannarenta,ioannisanagnostaras
+
 
 spark = SparkSession.builder.appName("Query3_RDD").getOrCreate()
 sc = spark.sparkContext
@@ -9,7 +10,7 @@ sc.setLogLevel("ERROR")
 job_id = sc.applicationId
 output_dir = f"hdfs://hdfs-namenode:9000/user/{username}/query3_rdd_output_{job_id}"
 
-# Διαβάζουμε τα parquet αρχεία
+
 pop_file = spark.read.parquet(
     f"hdfs://hdfs-namenode:9000/user/{username}/data/parquet/2010_Census_Populations_by_Zip_Code.parquet"
 ).rdd
@@ -18,14 +19,11 @@ income_file = spark.read.parquet(
     f"hdfs://hdfs-namenode:9000/user/{username}/data/parquet/LA_income_2015.parquet"
 ).rdd
 
-# Καθαρίζουμε και μετατρέπουμε σε float χωρίς χρήση συνάρτησης
 pop_rdd = pop_file.map(lambda x: (x["Zip Code"], float(str(x["Average Household Size"]))))
                   
 
-income_rdd = income_file.map(lambda x: (x["Zip Code"], float(str(x["Estimated Median Income"]).replace(",", "").replace("$", "").strip()))) )\
-                        .filter(lambda x: x[1] is not None)
+income_rdd = income_file.map(lambda x: (x["Zip Code"], float(str(x["Estimated Median Income"]).replace(",", "").replace("$", "").strip()))) 
 
-# Join και υπολογισμός εισοδήματος ανά άτομο
 joined_rdd = pop_rdd.join(income_rdd)
 
 result_rdd = joined_rdd.map(lambda x: (
@@ -33,10 +31,9 @@ result_rdd = joined_rdd.map(lambda x: (
     round(x[1][1] / x[1][0], 6)
 ))
 
-# Εμφάνιση αποτελεσμάτων
+
 for item in result_rdd.collect():
     print(item)
 
-# Αποθήκευση
 result_rdd.saveAsTextFile(output_dir)
 
