@@ -57,5 +57,9 @@ ORDER BY year, `#`
 """
 
 result = spark.sql(query)
-result.show(truncate=False)
+
+rows = result.collect()
+for row in rows:
+    print(f"Year: {row['year']}, Precinct: {row['precinct']}, Closed Case Rate: {row['closed_case_rate']}, Rank: {row['#']}")
+    
 result.write.mode("overwrite").parquet(output_dir)
