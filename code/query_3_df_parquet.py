@@ -36,7 +36,7 @@ result_df = joined_df.withColumn(
 ).select(
     col("Zip Code"),
     col("Income_per_Person")
-).orderBy(col("Income_per_Person").desc())
+)
 
 result_df.show()
 
