@@ -2,7 +2,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, to_date, year, when, count, round, row_number
 from pyspark.sql.window import Window
 
-username = "username" #georgiannareta,ioannisanagnostaras
+username = "username" #georgiannarenta,ioannisanagnostaras
 
 spark = SparkSession.builder.appName("Query2_DataFrame").getOrCreate()
 sc = spark.sparkContext
