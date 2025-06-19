@@ -26,7 +26,7 @@ joined_rdd = pop_rdd.join(income_rdd)
 
 result_rdd = joined_rdd.map(lambda x: (
     x[0],
-    round(x[1][1] / x[1][0], 2) if x[1][0] and x[1][0] != 0 else None
+    round(x[1][1] / x[1][0], 6) if x[1][0] and x[1][0] != 0 else None
 )).filter(lambda x: x[1] is not None)
 
 for item in result_rdd.collect():
