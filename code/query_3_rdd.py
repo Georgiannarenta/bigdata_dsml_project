@@ -20,12 +20,12 @@ income_file = spark.read.parquet(
 
 
 pop_rdd = pop_file.map(lambda x: (
-    x["Zip Code"],
+    str(x["Zip Code"]).strip(),
     float(str(x["Average Household Size"]))
-)).filter(lambda x: x[1] != 0)
+)).filter(lambda x: x[1] != 0 '' and x[0] is not None)
 
 income_rdd = income_file.map(lambda x: (
-    x["Zip Code"],
+    str(x["Zip Code"]).strip(),
     float(str(x["Estimated Median Income"]).replace(",", "").replace("$", "").strip()))
 )
 
