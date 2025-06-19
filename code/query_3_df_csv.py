@@ -54,4 +54,9 @@ result_df = joined_df.withColumn(
     col("Income_per_Person")
 )
 
+result = result_df.collect()
+
+for item in result:
+    print(item)
+    
 result_df.write.mode("overwrite").csv(output_dir, header=True)
