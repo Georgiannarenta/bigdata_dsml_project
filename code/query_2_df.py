@@ -47,7 +47,10 @@ ranked = agg.withColumn("#", row_number().over(part))
 
 top3 = ranked.filter(col("#") <= 3).orderBy("year", "#")
 
-top3.show(truncate=False)
+results = top3.collect()
+
+for row in results:
+    print(f"Year: {row['year']}, Precinct: {row['precinct']}, Closed Case Rate: {row['closed_case_rate']}, Rank: {row['#']}")
 
 top3.write.mode("overwrite").parquet(output_dir)
 
