@@ -1,7 +1,6 @@
 from pyspark.sql import SparkSession
 
-username = "username"  #georgiannarenta,ioannisanagnostaras
-
+username = "username" #georgiannarenta,ioannisanagnostaras
 
 spark = SparkSession.builder.appName("Query3_RDD").getOrCreate()
 sc = spark.sparkContext
@@ -19,21 +18,28 @@ income_file = spark.read.parquet(
     f"hdfs://hdfs-namenode:9000/user/{username}/data/parquet/LA_income_2015.parquet"
 ).rdd
 
-pop_rdd = pop_file.map(lambda x: (x["Zip Code"], float(str(x["Average Household Size"]))))
-                  
 
-income_rdd = income_file.map(lambda x: (x["Zip Code"], float(str(x["Estimated Median Income"]).replace(",", "").replace("$", "").strip()))) 
+pop_rdd = pop_file.map(lambda x: (
+    x["Zip Code"],
+    float(str(x["Average Household Size"]))
+))
+
+income_rdd = income_file.map(lambda x: (
+    x["Zip Code"],
+    float(str(x["Estimated Median Income"]).replace(",", "").replace("$", "").strip()))
+)
+
 
 joined_rdd = pop_rdd.join(income_rdd)
 
 result_rdd = joined_rdd.map(lambda x: (
-    x[0],
-    round(x[1][1] / x[1][0], 6)
+    x[0],  
+    round(x[1][1] / x[1][0], 6)  
 ))
 
 
 for item in result_rdd.collect():
     print(item)
 
-result_rdd.saveAsTextFile(output_dir)
 
+result_rdd.saveAsTextFile(output_dir)
