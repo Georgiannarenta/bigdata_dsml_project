@@ -1,7 +1,8 @@
 from pyspark.sql import SparkSession 
 
 username = "username" #georgiannarenta #ioannisanagnostaras
-spark = SparkSession.builder.appName("Query 1 RDD").getOrCreate()                        
+spark = SparkSession.builder.appName("Query 1 RDD").getOrCreate()
+sc = spark.sparkContext
 sc.setLogLevel("ERROR") 
 job_id = sc.applicationId 
 output_dir = f"hdfs://hdfs-namenode:9000/user/{username}/query1_rdd_output_{job_id}"   
