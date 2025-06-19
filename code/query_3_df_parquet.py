@@ -40,7 +40,7 @@ result_df = joined_df.withColumn(
 
 result_df.show()
 
-# Αποθηκεύεις το αποτέλεσμα
+
 result_df.write.mode("overwrite").parquet(output_dir)
 
 
