@@ -3,7 +3,7 @@ from pyspark.sql.functions import col, round, regexp_replace
 
 username = "username"  # georgiannarenta, ioannisanagnostaras
 
-spark = SparkSession.builder.appName("Query3_DataFrame_FilterDollar").getOrCreate()
+spark = SparkSession.builder.appName("Query3_DataFrame").getOrCreate()
 sc = spark.sparkContext
 sc.setLogLevel("ERROR")
 
