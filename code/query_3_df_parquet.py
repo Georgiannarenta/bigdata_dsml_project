@@ -14,7 +14,7 @@ pop_df = spark.read.parquet(f"hdfs://hdfs-namenode:9000/user/{username}/data/par
 income_df = spark.read.parquet(f"hdfs://hdfs-namenode:9000/user/{username}/data/parquet/LA_income_2015.parquet")
 
 # Καθαρίζεις τα πεδία εισοδήματος αφαιρώντας $ και κόμματα, και κάνεις cast σε double
-income_clean_df = income_income_df.withColumn(
+income_clean_df = income_df.withColumn(
     "Estimated_Median_Income_Clean",
     regexp_replace(regexp_replace(col("Estimated Median Income"), "\\$", ""), ",", "").cast("double")
 )
