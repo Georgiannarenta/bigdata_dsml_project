@@ -4,7 +4,7 @@ from pyspark.sql.types import StructType, StructField, StringType, IntegerType, 
 spark = SparkSession.builder \
     .appName("Convert CSV to Parquet") \
     .getOrCreate()
-sc = spark.sparkContext()
+sc = spark.sparkContext
 sc.setLogLevel("ERROR")
 
 username = "username" #georgiannarenta #ioannisanagnostaras
