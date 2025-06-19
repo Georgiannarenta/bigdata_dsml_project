@@ -14,7 +14,7 @@ pop_file = spark.read.parquet(
 ).rdd
 
 income_file = spark.read.parquet(
-    f"hdfs://hdfs-namenode:9000/user/{username}/data/parquet/LA_income_by_zip_2015.parquet"
+    f"hdfs://hdfs-namenode:9000/user/{username}/data/parquet/LA_income_2015.parquet"
 ).rdd
 
 
