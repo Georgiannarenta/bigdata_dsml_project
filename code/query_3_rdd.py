@@ -9,7 +9,6 @@ sc.setLogLevel("ERROR")
 job_id = sc.applicationId
 output_dir = f"hdfs://hdfs-namenode:9000/user/{username}/query3_rdd_output_{job_id}"
 
-# Διαβάζουμε αρχεία Parquet και μετατρέπουμε σε RDDs
 pop_file = spark.read.parquet(
     f"hdfs://hdfs-namenode:9000/user/{username}/data/parquet/LA_population_by_zip_2010.parquet"
 ).rdd
@@ -18,7 +17,7 @@ income_file = spark.read.parquet(
     f"hdfs://hdfs-namenode:9000/user/{username}/data/parquet/LA_income_by_zip_2015.parquet"
 ).rdd
 
-# Δημιουργούμε RDDs με (ZipCode, Household Size) και (ZipCode, Estimated Income)
+
 pop_rdd = pop_file.map(lambda x: (x["Zip Code"], x["Average Household Size"]))
 income_rdd = income_file.map(lambda x: (x["Zip Code"], x["Estimated Median Income"]))
 
