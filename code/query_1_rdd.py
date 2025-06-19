@@ -1,6 +1,6 @@
 from pyspark.sql import SparkSession 
 
-username = "username" 
+username = "username" #georgiannarenta #ioannisanagnostaras
 spark = SparkSession.builder.appName("Query 1 RDD").getOrCreate()                        
 sc.setLogLevel("ERROR") 
 job_id = sc.applicationId 
