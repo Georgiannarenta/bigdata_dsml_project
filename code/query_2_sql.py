@@ -8,7 +8,7 @@ sc = spark.sparkContext
 sc.setLogLevel("ERROR")
 
 job_id = sc.applicationId
-output_dir = f"hdfs://hdfs-namenode:9000/user/{username}/query_2_sql_output_{job_id}"
+output_dir = f"hdfs://hdfs-namenode:9000/user/{username}/query_2_sql_final_output_{job_id}"
 
 
 crime_data_10_19 = spark.read.parquet(
