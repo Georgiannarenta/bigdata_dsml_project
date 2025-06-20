@@ -46,7 +46,7 @@ police_df = police_df.withColumn("lat_deg", col("Y"))
 police_df = police_df.withColumn("lon_deg", col("X"))
 police_df = police_df.withColumn("DIVISION_UPPER", upper(col("DIVISION")))
 
-joined_df = crime_weapons.join(police_df,crime_weapons['AREA NAME_UPPER'] == police_df['DIVISION_UPPER'])
+joined_df = crime_weapons.join(police_df,crime_weapons['AREA_NAME_UPPER'] == police_df['DIVISION_UPPER'])
 
 joined_df = joined_df.withColumn("dlat", radians(col("lat_deg") - col("LAT"))) \
                      .withColumn("dlon", radians(col("lon_deg") - col("LON"))) \
