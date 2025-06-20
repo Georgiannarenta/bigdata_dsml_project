@@ -1,9 +1,8 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import broadcast,split, explode, col, lower, upper, udf, sqrt, pow, count, avg , radians
+from pyspark.sql.functions import broadcast, split, explode, col, lower, upper, radians, sin, cos, atan2, sqrt, pow, count, avg
 from pyspark.sql.window import Window
 from pyspark.sql.functions import row_number
-from pyspark.sql.types import DoubleType
-import math 
+import math
 
 username = 'username' #georgiannarenta, ioannisanagnostaras
 spark = (
@@ -36,38 +35,35 @@ mo_codes_filtered = mo_codes_df.filter(
 ).select("code")
 
 crime_weapons = crime_df.join(mo_codes_filtered, crime_df.mo_code == mo_codes_filtered.code, "inner").dropDuplicates(["DR_NO"])
+R = 6371000
+meters_per_degree_lat = 111320
+feet_to_meters = 0.3048
 
-R = 6371000 
-lat0_rad = math.radians(34.0)  
-transform_x = radians(col("LON")) * R * math.cos(lat0_rad)
-transform_y =  radians(col("LAT")) * R
-crime_weapons = crime_weapons.withColumn(
-    "crime_x",
-    transform_x
-).withColumn(
-    "crime_y",
-    transform_y
-).withColumn(
+crime_weapons.withColumn(
     "AREA_NAME_UPPER",
     upper(col("AREA NAME"))
 )
-feet_to_meters = 0.3048
 
-police_df = police_df.withColumn("X", col("X") * feet_to_meters)
-police_df = police_df.withColumn("Y", col("Y") *feet_to_meters)
+police_df = police_df.withColumn("lat_deg", (col("Y") * feet_to_meters) / meters_per_degree_lat)
+police_df = police_df.withColumn("lon_deg", (col("X") * feet_to_meters) / (meters_per_degree_lat * math.cos(math.radians(34))))
 police_df = police_df.withColumn("DIVISION_UPPER", upper(col("DIVISION")))
 
 
 joined_df = crime_weapons.crossJoin(broadcast(police_df))
+joined_df = joined_df.withColumn("dlat", radians(col("lat_deg") - col("LAT"))) \
+                     .withColumn("dlon", radians(col("lon_deg") - col("LON"))) \
+                     .withColumn("lat1", radians(col("LAT"))) \
+                     .withColumn("lat2", radians(col("lat_deg")))
 
-joined_df = joined_df.withColumn(
-    "distance",
-    sqrt(
-        pow(col("crime_x") - col("X"), 2) +
-        pow(col("crime_y") - col("Y"), 2)
-    )
+joined_df = joined_df.withColumn("a", 
+    pow(sin(col("dlat") / 2),2) + 
+    cos(col("lat1")) * cos(col("lat2")) * 
+    pow(sin(col("dlon") / 2),2)
 )
 
+joined_df = joined_df.withColumn("c", 2 * atan2(sqrt(col("a")), sqrt(1 - col("a"))))
+
+joined_df = joined_df.withColumn("distance", col("c") * R)
 
 part = Window.partitionBy("DR_NO").orderBy(col("distance").asc())
 
