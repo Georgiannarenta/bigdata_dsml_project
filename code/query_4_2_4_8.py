@@ -39,7 +39,7 @@ R = 6371000
 meters_per_degree_lat = 111320
 feet_to_meters = 0.3048
 
-crime_weapons.withColumn(
+crime_weapons = crime_weapons.withColumn(
     "AREA_NAME_UPPER",
     upper(col("AREA NAME"))
 )
