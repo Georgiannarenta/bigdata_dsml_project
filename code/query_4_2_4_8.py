@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import broadcast, split, explode, col, lower, upper, radians, sin, cos, atan2, sqrt, pow, count, avg
+from pyspark.sql.functions import split, explode, col, lower, upper, radians, sin, cos, atan2, sqrt, pow, count, avg
 from pyspark.sql.window import Window
 from pyspark.sql.functions import row_number
 import math
@@ -48,8 +48,7 @@ police_df = police_df.withColumn("lat_deg", (col("Y") * feet_to_meters) / meters
 police_df = police_df.withColumn("lon_deg", (col("X") * feet_to_meters) / (meters_per_degree_lat * math.cos(math.radians(34))))
 police_df = police_df.withColumn("DIVISION_UPPER", upper(col("DIVISION")))
 
-
-joined_df = crime_weapons.crossJoin(broadcast(police_df))
+joined_df = crime_weapons.join(police_df, crime_weapons["AREA_NAME_UPPER"] == police_df["DIVISION_UPPER"])
 joined_df = joined_df.withColumn("dlat", radians(col("lat_deg") - col("LAT"))) \
                      .withColumn("dlon", radians(col("lon_deg") - col("LON"))) \
                      .withColumn("lat1", radians(col("LAT"))) \
