@@ -203,5 +203,5 @@ result = closest_df.groupBy("DIVISION_UPPER") \
 
 # 13. Εμφάνιση
 result.show(truncate=False)
-
+result.write.mode("overwrite").parquet(output_dir)
 
