@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import split, explode, col, lower, upper, udf, sqrt, pow, count, avg
+from pyspark.sql.functions import split, explode, col, lower, upper, udf, sqrt, pow, count, avg , radians , cos
 from pyspark.sql.window import Window
 from pyspark.sql.functions import row_number
 from pyspark.sql.types import DoubleType
@@ -40,25 +40,16 @@ crime_weapons = crime_df.join(mo_codes_filtered, crime_df.mo_code == mo_codes_fi
 R = 6371000  # ακτίνα γης σε μέτρα
 lat0_rad = math.radians(34.0)  # Κεντρικό latitude για LA σε ακτίνια
 
-def transform_x(lon, lat):
-    if lon is None or lat is None:
-        return None
-    lon_rad = math.radians(lon)
-    return R * lon_rad * math.cos(lat0_rad)
-
-def transform_y(lon, lat):
-    if lon is None or lat is None:
-        return None
-    lat_rad = math.radians(lat)
-    return R * lat_rad
-
-x_udf = udf(transform_x, DoubleType())
-y_udf = udf(transform_y, DoubleType())
-
-
-crime_weapons = crime_weapons.withColumn("crime_x", x_udf(col("LON"), col("LAT"))) \
-                             .withColumn("crime_y", y_udf(col("LON"), col("LAT"))) \
-                             .withColumn("AREA_NAME_UPPER", upper(col("AREA NAME")))
+crime_weapons = crime_weapons.withColumn(
+    "crime_x",
+    radians(col("LON")) * R * cos(lat0_rad)
+).withColumn(
+    "crime_y",
+    radians(col("LAT")) * R
+).withColumn(
+    "AREA_NAME_UPPER",
+    upper(col("AREA NAME"))
+)
 
 police_df = police_df.withColumn("DIVISION_UPPER", upper(col("DIVISION")))
 
