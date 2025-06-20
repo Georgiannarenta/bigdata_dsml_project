@@ -79,3 +79,45 @@ result.show(truncate=False)
 
 # Αποθήκευση των αποτελεσμάτων στον HDFS
 result.write.parquet(output_dir)
+
+spark = SparkSession.builder \
+    .appName("Query4_EuclideanDistance") \
+    .config("spark.executor.instances", "2") \  # Χρησιμοποιούμε 2 executors
+    .config("spark.executor.cores", "4") \  # Κάθε executor θα έχει 4 cores
+    .config("spark.executor.memory", "8g") \  # Κάθε executor θα έχει 8GB μνήμης
+    .getOrCreate()
+
+spark = SparkSession.builder \
+    .appName("Query4_EuclideanDistance") \
+    .config("spark.executor.instances", "4") \  # Χρησιμοποιούμε 4 executors
+    .config("spark.executor.cores", "2") \  # Κάθε executor θα έχει 2 cores
+    .config("spark.executor.memory", "4g") \  # Κάθε executor θα έχει 4GB μνήμης
+    .getOrCreate()
+
+spark = SparkSession.builder \
+    .appName("Query4_EuclideanDistance") \
+    .config("spark.executor.instances", "8") \  # Χρησιμοποιούμε 8 executors
+    .config("spark.executor.cores", "1") \  # Κάθε executor θα έχει 1 core
+    .config("spark.executor.memory", "2g") \  # Κάθε executor θα έχει 2GB μνήμης
+    .getOrCreate()
+
+spark = SparkSession.builder \
+    .appName("Query4_EuclideanDistance") \
+    .config("spark.executor.instances", "2") \  # 2 executors
+    .config("spark.executor.cores", "1") \  # Κάθε executor έχει 1 core
+    .config("spark.executor.memory", "2g") \  # Κάθε executor έχει 2GB μνήμη
+    .getOrCreate()
+spark = SparkSession.builder \
+    .appName("Query4_EuclideanDistance") \
+    .config("spark.executor.instances", "2") \  # 2 executors
+    .config("spark.executor.cores", "2") \  # Κάθε executor έχει 2 cores
+    .config("spark.executor.memory", "4g") \  # Κάθε executor έχει 4GB μνήμη
+    .getOrCreate()
+
+spark = SparkSession.builder \
+    .appName("Query4_EuclideanDistance") \
+    .config("spark.executor.instances", "2") \  # 2 executors
+    .config("spark.executor.cores", "4") \  # Κάθε executor έχει 4 cores
+    .config("spark.executor.memory", "8g") \  # Κάθε executor έχει 8GB μνήμη
+    .getOrCreate()
+
