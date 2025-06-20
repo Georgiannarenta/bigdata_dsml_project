@@ -1,7 +1,7 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, when
 
-username = "georgiannarenta"
+username = "username" #georgiannarenta,ioannisanagnostaras
 spark = SparkSession.builder.appName("Query 1 DataFrame No UDF").getOrCreate()
 sc = spark.sparkContext
 sc.setLogLevel("ERROR")
