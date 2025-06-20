@@ -75,43 +75,43 @@ result.write.parquet(output_dir)
 
 spark = SparkSession.builder \
     .appName("Query4_EuclideanDistance") \
-    .config("spark.executor.instances", "2") \  # Χρησιμοποιούμε 2 executors
-    .config("spark.executor.cores", "4") \  # Κάθε executor θα έχει 4 cores
-    .config("spark.executor.memory", "8g") \  # Κάθε executor θα έχει 8GB μνήμης
+    .config("spark.executor.instances", "2") \  
+    .config("spark.executor.cores", "4") \ 
+    .config("spark.executor.memory", "8g") \ 
     .getOrCreate()
 
 spark = SparkSession.builder \
     .appName("Query4_EuclideanDistance") \
-    .config("spark.executor.instances", "4") \  # Χρησιμοποιούμε 4 executors
-    .config("spark.executor.cores", "2") \  # Κάθε executor θα έχει 2 cores
-    .config("spark.executor.memory", "4g") \  # Κάθε executor θα έχει 4GB μνήμης
+    .config("spark.executor.instances", "4") \  
+    .config("spark.executor.cores", "2") \  
+    .config("spark.executor.memory", "4g") \  
     .getOrCreate()
 
 spark = SparkSession.builder \
     .appName("Query4_EuclideanDistance") \
-    .config("spark.executor.instances", "8") \  # Χρησιμοποιούμε 8 executors
-    .config("spark.executor.cores", "1") \  # Κάθε executor θα έχει 1 core
-    .config("spark.executor.memory", "2g") \  # Κάθε executor θα έχει 2GB μνήμης
+    .config("spark.executor.instances", "8") \ 
+    .config("spark.executor.cores", "1") \ 
+    .config("spark.executor.memory", "2g") \  
     .getOrCreate()
 
 spark = SparkSession.builder \
     .appName("Query4_EuclideanDistance") \
-    .config("spark.executor.instances", "2") \  # 2 executors
-    .config("spark.executor.cores", "1") \  # Κάθε executor έχει 1 core
-    .config("spark.executor.memory", "2g") \  # Κάθε executor έχει 2GB μνήμη
+    .config("spark.executor.instances", "2") \  
+    .config("spark.executor.cores", "1") \  
+    .config("spark.executor.memory", "2g") \  
     .getOrCreate()
 spark = SparkSession.builder \
     .appName("Query4_EuclideanDistance") \
-    .config("spark.executor.instances", "2") \  # 2 executors
-    .config("spark.executor.cores", "2") \  # Κάθε executor έχει 2 cores
-    .config("spark.executor.memory", "4g") \  # Κάθε executor έχει 4GB μνήμη
+    .config("spark.executor.instances", "2") \  
+    .config("spark.executor.cores", "2") \  
+    .config("spark.executor.memory", "4g") \ 
     .getOrCreate()
 
 spark = SparkSession.builder \
     .appName("Query4_EuclideanDistance") \
-    .config("spark.executor.instances", "2") \  # 2 executors
-    .config("spark.executor.cores", "4") \  # Κάθε executor έχει 4 cores
-    .config("spark.executor.memory", "8g") \  # Κάθε executor έχει 8GB μνήμη
+    .config("spark.executor.instances", "2") \  
+    .config("spark.executor.cores", "4") \  
+    .config("spark.executor.memory", "8g") \  
     .getOrCreate()
 
 from pyspark.sql import SparkSession
@@ -124,9 +124,9 @@ from pyproj import Transformer
 username = 'username' #georgiannarenta, ioannisanagnostaras
 spark = SparkSession.builder \
     .appName("Query4_2_4_8") \
-    .config("spark.executor.instances", "2") \  # Χρησιμοποιούμε 2 executors
-    .config("spark.executor.cores", "4") \  # Κάθε executor θα έχει 4 cores
-    .config("spark.executor.memory", "8g") \  # Κάθε executor θα έχει 8GB μνήμης
+    .config("spark.executor.instances", "2") \
+    .config("spark.executor.cores", "4") \
+    .config("spark.executor.memory", "8g") \ 
     .getOrCreate()
 sc = spark.sparkContext
 sc.setLogLevel("ERROR")
