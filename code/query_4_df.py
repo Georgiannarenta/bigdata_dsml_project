@@ -121,7 +121,6 @@ from pyspark.sql.functions import row_number
 from pyspark.sql.types import DoubleType
 from pyproj import Transformer
 
-# 1. SparkSession
 username = 'username' #georgiannarenta, ioannisanagnostaras
 spark = SparkSession.builder \
     .appName("Query4_2_4_8") \
@@ -134,28 +133,25 @@ sc.setLogLevel("ERROR")
 
 job_id = sc.applicationId
 output_dir = f"hdfs://hdfs-namenode:9000/user/{username}/query4_df_2_4_8_output_{job_id}"
-# 2. Φόρτωση δεδομένων
 crime_df = spark.read.parquet(f"hdfs://hdfs-namenode:9000/user/{username}/data/parquet/LA_Crime_Data_2010_2019.parquet") \
            .union(spark.read.parquet(f"hdfs://hdfs-namenode:9000/user/{username}/data/parquet/LA_Crime_Data_2020_2025.parquet"))
 
 police_df = spark.read.parquet(f"hdfs://hdfs-namenode:9000/user/{username}/data/parquet/LA_Police_Stations.parquet")
 mo_codes_df = spark.read.parquet(f"hdfs://hdfs-namenode:9000/user/{username}/data/parquet/MO_codes.parquet")
 
-# 3. Διαχωρισμός MO codes
 crime_df = crime_df.withColumn("mo_code", explode(split(col("Mocodes"), " "))).filter(col("mo_code") != "")
 
-# 4. Φιλτράρισμα Null Island
+
 crime_df = crime_df.filter((col("LAT") != 0) & (col("LON") != 0))
 
-# 5. MO codes για 'gun' ή 'weapon'
+
 mo_codes_filtered = mo_codes_df.filter(
     (lower(col("description")).contains("gun")) | (lower(col("description")).contains("weapon"))
 ).select("code")
 
-# 6. Φιλτράρουμε μόνο εγκλήματα με όπλα
 crime_weapons = crime_df.join(mo_codes_filtered, crime_df.mo_code == mo_codes_filtered.code, "inner")
 
-# 7. pyproj transformer (WGS84 -> EPSG:2229)
+
 transformer = Transformer.from_crs("epsg:4326", "epsg:2229", always_xy=True)
 
 def transform_x(lon, lat):
@@ -169,17 +165,16 @@ def transform_y(lon, lat):
 x_udf = udf(transform_x, DoubleType())
 y_udf = udf(transform_y, DoubleType())
 
-# 8. Μετατροπή LON/LAT σε X/Y
 crime_weapons = crime_weapons.withColumn("crime_x", x_udf(col("LON"), col("LAT"))) \
                              .withColumn("crime_y", y_udf(col("LON"), col("LAT"))) \
                              .withColumn("AREA_NAME_UPPER", upper(col("AREA NAME")))
 
 police_df = police_df.withColumn("DIVISION_UPPER", upper(col("DIVISION")))
 
-# 9. Join crime με police station (χωρίς cross join)
+
 joined_df = crime_weapons.join(police_df, crime_weapons.AREA_NAME_UPPER == police_df.DIVISION_UPPER, "inner")
 
-# 10. Υπολογισμός ευκλείδειας απόστασης
+ς
 joined_df = joined_df.withColumn(
     "distance",
     sqrt(
@@ -188,12 +183,11 @@ joined_df = joined_df.withColumn(
     )
 )
 
-# 11. Πλησιέστερο τμήμα ανά έγκλημα
+
 part = Window.partitionBy("crime_id").orderBy(col("distance").asc())
 
 closest_df = joined_df.withColumn("rn", row_number().over(part)).filter(col("rn") == 1)
 
-# 12. Ομαδοποίηση αποτελεσμάτων
 result = closest_df.groupBy("DIVISION_UPPER") \
                    .agg(
                        count("*").alias("#"),
@@ -201,7 +195,7 @@ result = closest_df.groupBy("DIVISION_UPPER") \
                    ) \
                    .orderBy(col("#").desc())
 
-# 13. Εμφάνιση
+
 result.show(truncate=False)
 result.write.mode("overwrite").parquet(output_dir)
 
