@@ -75,7 +75,8 @@ closest_df = joined_df.withColumn("rn", row_number().over(part)).filter(col("rn"
 
 result = closest_df.groupBy("DIVISION_UPPER") \
                    .agg(
-                       count("*").alias("#"),
+                   count("*").alias("#"),
+                   avg(col("distance") / 1000).alias("average_distance_km")
                    ) \
                    .orderBy(col("#").desc())
 
