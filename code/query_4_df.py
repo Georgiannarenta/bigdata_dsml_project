@@ -3,7 +3,6 @@ from pyspark.sql.functions import split, explode, col, lower, trim, broadcast, s
 from pyspark.sql.window import Window
 from pyspark.sql.functions import row_number
 
-# Δημιουργία του SparkSession με το Application ID
 spark = SparkSession.builder \
     .appName("Query4_EuclideanDistance") \
     .config("spark.sql.shuffle.partitions", "200") \  # Αν θες να αλλάξεις τον αριθμό των partitions
