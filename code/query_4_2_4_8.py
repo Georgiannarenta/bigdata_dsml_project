@@ -51,7 +51,10 @@ crime_weapons = crime_weapons.withColumn(
     "AREA_NAME_UPPER",
     upper(col("AREA NAME"))
 )
+feet_to_meters = 0.3048
 
+police_df = police_df.withColumn("X", col("X") * feet_to_meters)
+police_df = police_df.withColumn("Y", col("Y") *feet_to_meters)
 police_df = police_df.withColumn("DIVISION_UPPER", upper(col("DIVISION")))
 
 
@@ -73,7 +76,6 @@ closest_df = joined_df.withColumn("rn", row_number().over(part)).filter(col("rn"
 result = closest_df.groupBy("DIVISION_UPPER") \
                    .agg(
                        count("*").alias("#"),
-                       avg("distance").alias("average_distance")
                    ) \
                    .orderBy(col("#").desc())
 
