@@ -58,7 +58,7 @@ police_df = police_df.withColumn("Y", col("Y") *feet_to_meters)
 police_df = police_df.withColumn("DIVISION_UPPER", upper(col("DIVISION")))
 
 
-joined_df = crime_weapons.join(police_df, crime_weapons.AREA_NAME_UPPER == police_df.DIVISION_UPPER, "inner")
+joined_df = crime_weapons.crossJoin(spark.broadcast(police_df))
 
 joined_df = joined_df.withColumn(
     "distance",
