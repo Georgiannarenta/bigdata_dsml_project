@@ -122,7 +122,7 @@ from pyspark.sql.types import DoubleType
 from pyproj import Transformer
 
 # 1. SparkSession
-
+username = 'username' #georgiannarenta, ioannisanagnostaras
 spark = SparkSession.builder \
     .appName("Query4_2_4_8") \
     .config("spark.executor.instances", "2") \  # Χρησιμοποιούμε 2 executors
