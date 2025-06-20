@@ -14,7 +14,7 @@ sc = spark.sparkContext
 sc.setLogLevel("ERROR")
 
 job_id = sc.applicationId
-output_dir = f"hdfs://hdfs-namenode:9000/user/{username}/query3_df_final_output_{job_id}"
+output_dir = f"hdfs://hdfs-namenode:9000/user/{username}/query4_df_2_4_8_output_{job_id}"
 
 # Φορτώνουμε τα parquet αρχεία (αν τα έχεις ήδη μετατρέψει)
 crime_df = spark.read.parquet(f"hdfs://hdfs-namenode:9000/user/{username}/data/parquet/LA_Crime_Data_2010_2019.parquet") \
