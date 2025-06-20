@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import split, explode, col, lower, upper, radians, sin, cos, atan2, sqrt, pow, count, avg
+from pyspark.sql.functions import broadcast, split, explode, col, lower, upper, radians, sin, cos, atan2, sqrt, pow, count, avg
 from pyspark.sql.window import Window
 from pyspark.sql.functions import row_number
 import math
@@ -36,19 +36,18 @@ mo_codes_filtered = mo_codes_df.filter(
 
 crime_weapons = crime_df.join(mo_codes_filtered, crime_df.mo_code == mo_codes_filtered.code, "inner").dropDuplicates(["DR_NO"])
 R = 6371000
-meters_per_degree_lat = 111320
-feet_to_meters = 0.3048
 
 crime_weapons = crime_weapons.withColumn(
     "AREA_NAME_UPPER",
     upper(col("AREA NAME"))
 )
 
-police_df = police_df.withColumn("lat_deg", (col("Y") * feet_to_meters) / meters_per_degree_lat)
-police_df = police_df.withColumn("lon_deg", (col("X") * feet_to_meters) / (meters_per_degree_lat * math.cos(math.radians(34))))
+police_df = police_df.withColumn("lat_deg", col("Y"))
+police_df = police_df.withColumn("lon_deg", col("X"))
 police_df = police_df.withColumn("DIVISION_UPPER", upper(col("DIVISION")))
 
-joined_df = crime_weapons.join(police_df, crime_weapons["AREA_NAME_UPPER"] == police_df["DIVISION_UPPER"])
+joined_df = crime_weapons.join(police_df,crime_weapons['AREA NAME_UPPER'] == police_df['DIVISION_UPPER'])
+
 joined_df = joined_df.withColumn("dlat", radians(col("lat_deg") - col("LAT"))) \
                      .withColumn("dlon", radians(col("lon_deg") - col("LON"))) \
                      .withColumn("lat1", radians(col("LAT"))) \
@@ -77,5 +76,5 @@ result = closest_df.groupBy("DIVISION_UPPER") \
 
 
 result.show(truncate=False)
-result.write.mode("overwrite").parquet(output_dir)
+result.write.mode("overwrite").parquet(output_dir) 
 
