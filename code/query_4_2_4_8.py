@@ -35,10 +35,10 @@ mo_codes_filtered = mo_codes_df.filter(
     (lower(col("description")).contains("gun")) | (lower(col("description")).contains("weapon"))
 ).select("code")
 
-crime_weapons = crime_df.join(mo_codes_filtered, crime_df.mo_code == mo_codes_filtered.code, "inner")
+crime_weapons = crime_df.join(mo_codes_filtered, crime_df.mo_code == mo_codes_filtered.code, "inner").dropDuplicates(["DR_NO"])
 
-R = 6371000  # ακτίνα γης σε μέτρα
-lat0_rad = math.radians(34.0)  # Κεντρικό latitude για LA σε ακτίνια
+R = 6371000 
+lat0_rad = math.radians(34.0)  
 transform_x = radians(col("LON")) * R * math.cos(lat0_rad)
 transform_y =  radians(col("LAT")) * R
 crime_weapons = crime_weapons.withColumn(
@@ -66,7 +66,7 @@ joined_df = joined_df.withColumn(
 )
 
 
-part = Window.partitionBy("crime_id").orderBy(col("distance").asc())
+part = Window.partitionBy("DR_NO").orderBy(col("distance").asc())
 
 closest_df = joined_df.withColumn("rn", row_number().over(part)).filter(col("rn") == 1)
 
