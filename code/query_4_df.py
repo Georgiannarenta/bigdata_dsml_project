@@ -122,12 +122,14 @@ from pyspark.sql.types import DoubleType
 from pyproj import Transformer
 
 username = 'username' #georgiannarenta, ioannisanagnostaras
-spark = (SparkSession.builder
-         .appName("Query4_2_4_8")
-         .config("spark.executor.instances", "2")  
-         .config("spark.executor.cores", "4")  
-         .config("spark.executor.memory", "8g")  
-         .getOrCreate())
+spark = (
+    SparkSession.builder
+    .appName("Query4_2_4_8")
+    .config("spark.executor.instances", "2") 
+    .config("spark.executor.cores", "4")     
+    .config("spark.executor.memory", "8g")  
+    .getOrCreate()
+)
 sc = spark.sparkContext
 sc.setLogLevel("ERROR")
 
