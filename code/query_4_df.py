@@ -114,3 +114,59 @@ spark = SparkSession.builder \
     .config("spark.executor.memory", "8g") \  # Κάθε executor έχει 8GB μνήμη
     .getOrCreate()
 
+from pyproj import Transformer
+from pyspark.sql.functions import udf, col, upper, sqrt, pow
+from pyspark.sql.types import DoubleType
+
+# Δημιουργία transformer: από WGS84 (EPSG:4326) σε EPSG:2229 (το projection των police stations)
+transformer = Transformer.from_crs("epsg:4326", "epsg:2229", always_xy=True)
+
+# Ορισμός UDFs για μετατροπή
+def x_transform(lon, lat):
+    x, y = transformer.transform(lon, lat)
+    return float(x)
+
+def y_transform(lon, lat):
+    x, y = transformer.transform(lon, lat)
+    return float(y)
+
+x_udf = udf(x_transform, DoubleType())
+y_udf = udf(y_transform, DoubleType())
+
+# Μετατροπή στο crime_df
+crime_df = crime_df.withColumn("crime_x", x_udf(col("LON"), col("LAT"))) \
+                   .withColumn("crime_y", y_udf(col("LON"), col("LAT")))
+
+# Κανονικοποίηση πεδίων για join
+crime_df = crime_df.withColumn("precinct_upper", upper(col("AREA NAME")))
+police_df = police_df.withColumn("division_upper", upper(col("DIVISION")))
+
+# Υπολογισμός ευκλείδειας απόστασης (με X,Y)
+def euclidean_distance(x1, y1, x2, y2):
+    return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2))
+
+# Join με broadcast για να πάρουμε matching precinct/division
+joined_df = crime_df.join(police_df, crime_df.precinct_upper == police_df.division_upper, "inner")
+
+joined_df = joined_df.withColumn("distance", euclidean_distance(
+    col("crime_x"), col("crime_y"),
+    col("X"), col("Y")
+))
+
+from pyspark.sql.window import Window
+from pyspark.sql.functions import row_number
+
+part = Window.partitionBy("crime_id").orderBy(col("distance").asc())
+
+closest_df = joined_df.withColumn("rn", row_number().over(part)) \
+                      .filter(col("rn") == 1)
+
+# Αποτελέσματα ανά division
+result = closest_df.groupBy("division_upper") \
+                   .agg(
+                       count("*").alias("crime_count"),
+                       avg("distance").alias("avg_distance")
+                   ) \
+                   .orderBy(col("crime_count").desc())
+
+result.show(truncate=False)
