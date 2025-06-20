@@ -2,7 +2,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import udf, col
 from pyspark.sql.types import StringType
 
-username = "georgiannarenta"
+username = "username" #georgiannarenta,ioannisanagnostaras
 spark = SparkSession.builder.appName("Query 1 DataFrame UDF").getOrCreate()
 sc = spark.sparkContext
 sc.setLogLevel("ERROR")
