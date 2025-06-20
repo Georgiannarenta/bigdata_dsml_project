@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import split, explode, col, lower, upper, udf, sqrt, pow, count, avg , radians , cos
+from pyspark.sql.functions import split, explode, col, lower, upper, udf, sqrt, pow, count, avg , radians
 from pyspark.sql.window import Window
 from pyspark.sql.functions import row_number
 from pyspark.sql.types import DoubleType
@@ -39,13 +39,14 @@ crime_weapons = crime_df.join(mo_codes_filtered, crime_df.mo_code == mo_codes_fi
 
 R = 6371000  # ακτίνα γης σε μέτρα
 lat0_rad = math.radians(34.0)  # Κεντρικό latitude για LA σε ακτίνια
-
+transform_x = radians(col("LON")) * R * math.cos(lat0_rad)
+transform_y =  radians(col("LAT")) * R
 crime_weapons = crime_weapons.withColumn(
     "crime_x",
-    radians(col("LON")) * R * cos(lat0_rad)
+    transform_x
 ).withColumn(
     "crime_y",
-    radians(col("LAT")) * R
+    transform_y
 ).withColumn(
     "AREA_NAME_UPPER",
     upper(col("AREA NAME"))
